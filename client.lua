@@ -28,7 +28,7 @@ local meleeAlert = true --Set if show when player fight in melee
 local blipGunTime = 5 --in second
 local blipMeleeTime = 7 --in second
 local blipJackingTime = 10 -- in second
-local showcopsmisbehave = true  --show notification when cops steal too
+local showcopsmisbehave = false  --show notification when cops steal too
 --End config
 
 local timing = timer * 60000 --Don't touche it
@@ -36,7 +36,7 @@ local timing = timer * 60000 --Don't touche it
 GetPlayerName()
 RegisterNetEvent('outlawNotify')
 AddEventHandler('outlawNotify', function(alert)
-		if showcopsmisbehave and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
+		if PlayerData.job ~= nil and PlayerData.job.name == 'police' then
             Notify(alert)
         end
 end)
@@ -182,25 +182,46 @@ Citizen.CreateThread( function()
         local street2 = GetStreetNameFromHashKey(s2)
         if IsPedTryingToEnterALockedVehicle(GetPlayerPed(-1)) or IsPedJacking(GetPlayerPed(-1)) then
 			DecorSetInt(GetPlayerPed(-1), "IsOutlaw", 2)
-			ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-				local sex = nil
-
-				if skin.sex == 0 then
-					sex = "un homme"
-				else
-					sex = "une femme"
-				end
-				TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
-				local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
-				local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-				local vehName2 = GetLabelText(vehName)
-				if s2 == 0 then
-					TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
-				elseif s2 ~= 0 then
-					TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
-				end
-			end)
-			Wait(5000)
+			if PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave == false then
+			elseif PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave then
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
+					local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
+					local vehName2 = GetLabelText(vehName)
+					if s2 == 0 then
+						TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
+					end
+				end)
+				Wait(5000)
+			else
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
+					local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
+					local vehName2 = GetLabelText(vehName)
+					if s2 == 0 then
+						TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
+					end
+				end)
+				Wait(5000)
+			end
         end
     end
 end)
@@ -214,21 +235,40 @@ Citizen.CreateThread( function()
         local street2 = GetStreetNameFromHashKey(s2)
         if IsPedInMeleeCombat(GetPlayerPed(-1)) then
             DecorSetInt(GetPlayerPed(-1), "IsOutlaw", 2)
-            ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-				local sex = nil
-				if skin.sex == 0 then
-					sex = "un homme"
-				else
-					sex = "une femme"
-				end
-				TriggerServerEvent('meleeInProgressPos', plyPos.x, plyPos.y, plyPos.z)
-				if s2 == 0 then
-					TriggerServerEvent('meleeInProgressS1', street1, sex)
-				elseif s2 ~= 0 then
-					TriggerServerEvent("meleeInProgress", street1, street2, sex)
-				end
-			end)
-            Wait(3000)
+			if PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave == false then
+			elseif PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave then
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('meleeInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					if s2 == 0 then
+						TriggerServerEvent('meleeInProgressS1', street1, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent("meleeInProgress", street1, street2, sex)
+					end
+				end)
+				Wait(3000)
+			else
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('meleeInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					if s2 == 0 then
+						TriggerServerEvent('meleeInProgressS1', street1, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent("meleeInProgress", street1, street2, sex)
+					end
+				end)
+				Wait(3000)
+			end
         end
     end
 end)
@@ -242,21 +282,40 @@ Citizen.CreateThread( function()
         local street2 = GetStreetNameFromHashKey(s2)
         if IsPedShooting(GetPlayerPed(-1)) then
             DecorSetInt(GetPlayerPed(-1), "IsOutlaw", 2)
-            ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-				local sex = nil
-				if skin.sex == 0 then
-					sex = "un homme"
-				else
-					sex = "une femme"
-				end
-				TriggerServerEvent('gunshotInProgressPos', plyPos.x, plyPos.y, plyPos.z)
-				if s2 == 0 then
-					TriggerServerEvent('gunshotInProgressS1', street1, sex)
-				elseif s2 ~= 0 then
-					TriggerServerEvent("gunshotInProgress", street1, street2, sex)
-				end
-			end)
-            Wait(3000)
+			if PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave == false then
+			elseif PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave then
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('gunshotInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					if s2 == 0 then
+						TriggerServerEvent('gunshotInProgressS1', street1, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent("gunshotInProgress", street1, street2, sex)
+					end
+				end)
+				Wait(3000)
+			else
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+					local sex = nil
+					if skin.sex == 0 then
+						sex = "un homme"
+					else
+						sex = "une femme"
+					end
+					TriggerServerEvent('gunshotInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+					if s2 == 0 then
+						TriggerServerEvent('gunshotInProgressS1', street1, sex)
+					elseif s2 ~= 0 then
+						TriggerServerEvent("gunshotInProgress", street1, street2, sex)
+					end
+				end)
+				Wait(3000)
+			end
         end
     end
 end)
