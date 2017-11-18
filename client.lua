@@ -28,7 +28,7 @@ local meleeAlert = true --Set if show when player fight in melee
 local blipGunTime = 5 --in second
 local blipMeleeTime = 7 --in second
 local blipJackingTime = 10 -- in second
-local showcopsmisbehave = false  --show notification when cops steal too
+local showcopsmisbehave = true  --show notification when cops steal too
 --End config
 
 local timing = timer * 60000 --Don't touche it
@@ -183,50 +183,73 @@ Citizen.CreateThread( function()
         local street1 = GetStreetNameFromHashKey(s1)
         local street2 = GetStreetNameFromHashKey(s2)
         if IsPedTryingToEnterALockedVehicle(GetPlayerPed(-1)) or IsPedJacking(GetPlayerPed(-1)) then
+			TriggerServerEvent('eden_garage:debug', "carjacking!")
+			Wait(3000)
 			DecorSetInt(GetPlayerPed(-1), "IsOutlaw", 2)
+			local playerPed = GetPlayerPed(-1)
+			local coords    = GetEntityCoords(playerPed)
+			local vehicle =GetVehiclePedIsIn(playerPed,false)
+			local vehicleProps  = ESX.Game.GetVehicleProperties(vehicle)
 			if PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave == false then
 			elseif PlayerData.job ~= nil and PlayerData.job.name == 'police' and showcopsmisbehave then
-				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-					local sex = nil
-					if skin.sex == 0 then
-						sex = "un homme"
+				ESX.TriggerServerCallback('esx_outlawalert:ownvehicle',function(valid)
+					if (valid) then
 					else
-						sex = "une femme"
+						ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+							local sex = nil
+							if skin.sex == 0 then
+								sex = "un homme"
+							else
+								sex = "une femme"
+							end
+							TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+							local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
+							local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
+							local vehName2 = GetLabelText(vehName)
+							if s2 == 0 then
+								if IsPedInAnyPoliceVehicle(GetPlayerPed(-1)) then
+									TriggerServerEvent('thiefInProgressS1police', street1, vehName2, sex)
+								else
+									TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
+								end
+							elseif s2 ~= 0 then
+								if IsPedInAnyPoliceVehicle(GetPlayerPed(-1)) then
+									TriggerServerEvent('thiefInProgressPolice', street1, street2, vehName2, sex)
+								else
+									TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
+								end
+							end
+						end)
 					end
-					TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
-					local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
-					local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-					local vehName2 = GetLabelText(vehName)
-					if s2 == 0 then
-						TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
-					elseif s2 ~= 0 then
-						TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
-					end
-				end)
-				Wait(5000)
+				end,vehicleProps)
 			else
-				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-					local sex = nil
-					if skin.sex == 0 then
-						sex = "un homme"
+				ESX.TriggerServerCallback('esx_outlawalert:ownvehicle',function(valid)
+					if (valid) then
 					else
-						sex = "une femme"
+						ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+							local sex = nil
+							if skin.sex == 0 then
+								sex = "un homme"
+							else
+								sex = "une femme"
+							end
+							TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
+							local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
+							local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
+							local vehName2 = GetLabelText(vehName)
+							if s2 == 0 then
+								TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
+							elseif s2 ~= 0 then
+								TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
+							end
+						end)
 					end
-					TriggerServerEvent('thiefInProgressPos', plyPos.x, plyPos.y, plyPos.z)
-					local veh = GetVehiclePedIsTryingToEnter(GetPlayerPed(-1))
-					local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-					local vehName2 = GetLabelText(vehName)
-					if s2 == 0 then
-						TriggerServerEvent('thiefInProgressS1', street1, vehName2, sex)
-					elseif s2 ~= 0 then
-						TriggerServerEvent('thiefInProgress', street1, street2, vehName2, sex)
-					end
-				end)
-				Wait(5000)
+				end,vehicleProps)
 			end
         end
     end
 end)
+
 
 Citizen.CreateThread( function()
     while true do
