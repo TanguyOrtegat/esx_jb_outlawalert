@@ -144,24 +144,26 @@ end)
 11-
 12- Clear blue]]
 
-Citizen.CreateThread( function()
-    while true do
-        Wait(0)
-        if showOutlaw then
-            for i = 0, 31 do
-                if DecorGetInt(GetPlayerPed(i), "IsOutlaw") == 2 and GetPlayerPed(i) ~= GetPlayerPed(-1) then
-                    gamerTagId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(i), ".", false, false, "", 0 )
-                    Citizen.InvokeNative(0xCF228E2AA03099C3, gamerTagId, 0) --Show a star
-                    Citizen.InvokeNative(0x63BB75ABEDC1F6A0, gamerTagId, 7, true) --Active gamerTagId
-                    Citizen.InvokeNative(0x613ED644950626AE, gamerTagId, 7, 1) --White star
-                elseif DecorGetInt(GetPlayerPed(i), "IsOutlaw") == 1 then
-                    Citizen.InvokeNative(0x613ED644950626AE, gamerTagId, 7, 255) -- Set Color to 255
-                    Citizen.InvokeNative(0x63BB75ABEDC1F6A0, gamerTagId, 7, false) --Unactive gamerTagId
-                end
-            end
-        end
-    end
-end)
+-- Citizen.CreateThread( function()
+    -- while true do
+        -- Wait(0)
+        -- if showOutlaw then
+            -- for i = 0, 31 do
+				-- if PlayerData.job ~= nil and PlayerData.job.name == 'police' then
+					-- if DecorGetInt(GetPlayerPed(i), "IsOutlaw") == 2 and GetPlayerPed(i) ~= GetPlayerPed(-1) then
+						-- gamerTagId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(i), ".", false, false, "", 0 )
+						-- Citizen.InvokeNative(0xCF228E2AA03099C3, gamerTagId, 0) --Show a star
+						-- Citizen.InvokeNative(0x63BB75ABEDC1F6A0, gamerTagId, 7, true) --Active gamerTagId
+						-- Citizen.InvokeNative(0x613ED644950626AE, gamerTagId, 7, 1) --White star
+					-- elseif DecorGetInt(GetPlayerPed(i), "IsOutlaw") == 1 then
+						-- Citizen.InvokeNative(0x613ED644950626AE, gamerTagId, 7, 255) -- Set Color to 255
+						-- Citizen.InvokeNative(0x63BB75ABEDC1F6A0, gamerTagId, 7, false) --Unactive gamerTagId
+					-- end
+				-- end
+            -- end
+        -- end
+    -- end
+-- end)
 
 Citizen.CreateThread( function()
     while true do
